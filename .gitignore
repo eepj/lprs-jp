@@ -1,0 +1,6 @@
+data
+__pycache__
+.DS_STORE
+*.pt
+*.pth
+*.pickle
