@@ -65,16 +65,16 @@ The models were trained using the Adam optimizer with cross entropy loss. The in
   <tr>
     <td>① Issuing Office Code</td>
     <td>32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64, 128</td>
-    <td>412<br>(134)</td>
+    <td>412 (134)</td>
     <td>0.93046<br>0.97816<br>0.97330</td>
     <td>0.92476<br>0.97543<br>0.97289</td>
     <td>368<br>462<br>132</td>
-    <td>✅<br>(a)</td>
+    <td><br>✅<br>(a)</td>
   </tr>
   <tr>
     <td>② Classification Number</td>
     <td>32, 64, 128<br>16, 32, 64</td>
-    <td>444<br>(11)</td>
+    <td>444 (11)</td>
     <td>0.97478<br>0.98423</td>
     <td>0.97760<br>0.98298</td>
     <td>97.9<br>25.9</td>
@@ -83,20 +83,20 @@ The models were trained using the Adam optimizer with cross entropy loss. The in
   <tr>
     <td>③ Kana Character</td>
     <td>32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64, 128</td>
-    <td>430<br>(43)</td>
+    <td>430 (43)</td>
     <td>0.95814<br>0.97907<br>0.97674</td>
     <td>0.95581<br>0.97776<br>0.97519</td>
     <td>143<br>400<br>103</td>
-    <td>✅<br>(a)</td>
+    <td><br>✅<br>(a)</td>
   </tr>
   <tr>
     <td>④ Designation Number</td>
     <td>32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64</td>
-    <td>547<br>(11)</td>
+    <td>547 (11)</td>
     <td>0.99086<br>0.99269<br>0.99086</td>
     <td>0.99092<br>0.99271<br>0.99086</td>
     <td>104<br>395<br>29.4</td>
-    <td>(b)<br>✅</td>
+    <td><br>(b)<br>✅</td>
   </tr>
 </table>
 
