@@ -29,23 +29,25 @@ Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingf
     <th>Background Color</th>
   </tr>
   <tr>
-    <td rowspan="2">Private</td>
+    <td>Private</td>
     <td>≥ 660 cc</td>
     <td>Green</td>
     <td>White</td>
   </tr>
   <tr>
+    <td>Private</td>
     <td>< 660 cc</td>
     <td>Black</td>
     <td>Yellow</td>
   </tr>
   <tr>
-    <td rowspan="2">Commercial</td>
+    <td>Commercial</td>
     <td>≥ 660 cc</td>
     <td>White</td>
     <td>Green</td>
   </tr>
   <tr>
+    <td>Commercial</td>
     <td>< 660 cc</td>
     <td>Yellow</td>
     <td>Black</td>
@@ -67,16 +69,16 @@ Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingf
 
 ## Datasets
 ### License Plates Dataset
-* Dataset comprising 350 vehicles and thier corresponding license plate bounding box used to fine-tune YOLOv8 detection model to detect license plates from images.
+* Dataset comprising 350 vehicles and their corresponding license plate bounding boxes for fine-tuning YOLOv8 detection model to detect license plates from images.
 
 ### alpr_jp
-* Dataset comprising 1000+ Japanese license plate images used to train character recognition models.
+* Dataset comprising 1000+ Japanese license plate images for training character recognition models.
 * Google Search images were used to supplement the dataset in case of missing or less common markings.
 
 
 ## Training
 ### Model
-* CNN adapted from *Chinese License Plate Recognition System Based on Convolutional Neural Network*, layer depths adjusted according to specific recognition task
+* CNN adapted from *Chinese License Plate Recognition System Based on Convolutional Neural Network*, layer depths adjusted according to specific recognition task.
 ### Hardware
 * Apple M1 with MPS hardware acceleration
 
@@ -165,8 +167,6 @@ Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingf
 * (a) Model not deployed despite comparable metrics as a substantial decrease in confidence in the predicted classes was observed.
 
 * (b) Increasing the number of parameters resulted in marginal improvement or degraded performance.
-
-* Vehicles must be partially visible for the license plates to be detected.
 
 ## References
 **alpr_jp**
