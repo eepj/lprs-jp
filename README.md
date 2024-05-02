@@ -1,39 +1,109 @@
-# **Japanese License Plate Recognition**
+# Japanese License Plate Recognition
 ![Example use case](./images/AYapiMKfSYI.png)
-<br>
-> [!Note]
-> For personal research purposes only.
 
-## **Hugging Face Space Demo**
+A Japanese license plate recognition project implemented with PyTorch.
+> [!Note]
+> For personal research purposes only. Project under development.
+
+## Hugging Face Space Demo
 Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingface.co/spaces/eepj/jlpr).
 
-You can run the model on the example images or upload your own images.
-The vehicles must be partially visible for the license plates to be detected. As of now the model can only identify license plate numbers if they are appropriately angled.
-
-## **Japanese License Plate Format**
+## Japanese License Plate Format
+### Markings
 <table>
   <tr>
     <td>
-      <img src="./images/XZjptNTxOZF.png" height="100px">
+      <div style="max-width: 80px; overflow: hidden;">
+        <img src="./images/XZjptNTxOZF.png" style="max-width: 100%; height: auto;">
+      </div>
     </td>
     <td>
-      ① Issuing Office Code<br>
-      ② Classification Number<br>
-      ③ Kana Character<br>
+      ① Name of Region Registered
+      <br>
+      ② Classification Number
+      <br>
+      ③ Kana Character
+      <br>
       ④ 4-Digit Designation Number (Leading zeros are shown as ．)
     </td>
   </tr>
 </table>
 
-## **Training**
-### **Hardware and Schedule**
-The models were trained on an M1 processor with MPS hardware acceleration. Each model was trained for 100 epochs.
+### Color Scheme
+<table>
+  <tr>
+    <th>License Plate Type</th>
+    <th>Engine Displacement</th>
+    <th>Marking Color</th>
+    <th>Background Color</th>
+  </tr>
+  <tr>
+    <td rowspan="2">Private</td>
+    <td>≥ 660 cc</td>
+    <td>Green</td>
+    <td>White</td>
+  </tr>
+  <tr>
+    <td>< 660 cc</td>
+    <td>Black</td>
+    <td>Yellow</td>
+  </tr>
+  <tr>
+    <td rowspan="2">Commercial</td>
+    <td>≥ 660 cc</td>
+    <td>White</td>
+    <td>Green</td>
+  </tr>
+  <tr>
+    <td>< 660 cc</td>
+    <td>Yellow</td>
+    <td>Black</td>
+  </tr>
+  <tr>
+    <td>Commemorative</td>
+    <td>–</td>
+    <td>Green</td>
+    <td>Multiple</td>
+  </tr>
+  <tr>
+    <td>Glowing</td>
+    <td>–</td>
+    <td>Neon Green</td>
+    <td>White</td>
+  </tr>
+</table>
 
-### **Optimizer and Learning Rate**
-The models were trained using the Adam optimizer with cross entropy loss. The initial learning rate was set to 1e-3, and the learning rate was reduced by factor of 0.1 every 30 epochs.
 
-## **Metrics**
-### **License Plate Localization**
+## Datasets
+### License Plates Dataset
+* Dataset comprising 350 vehicles and thier corresponding license plate bounding box used to fine-tune YOLOv8 detection model to detect license plates from images.
+
+### alpr_jp
+* Dataset comprising 1000+ Japanese license plate images used to train character recognition models.
+* Google Search images were used to supplement the dataset in case of missing or less common markings.
+
+
+## Training
+### Model
+* CNN adapted from *Chinese License Plate Recognition System Based on Convolutional Neural Network*, layer depths adjusted according to specific recognition task
+### Hardware
+* Apple M1 with MPS hardware acceleration
+
+### Hyperparameters
+* Number of epochs: 100
+* Optimizer: Adam
+* Initial learning rate: 1e-3
+* Learning rate scheduler: StepLR, reduce by factor of 0.1 every 30 epochs
+* Loss function: CrossEntropyLoss
+* Random seed: 42
+
+### Data Augmentation
+ * Training images were passed to a 7-step augmenetation pipeline to enhance the model's robustness against image quality, camera angles and color variations.
+
+![Augmentation pipeline](./images/HIMwhOP3XxY.png)
+
+## Metrics
+### License Plate Detection (YOLOv8)
 <table>
   <tr>
     <th>Precision(B)</th>
@@ -51,21 +121,21 @@ The models were trained using the Adam optimizer with cross entropy loss. The in
   </tr>
 </table>
 
-### **Character Recognition**
+### Character Recognition
 <table>
   <tr>
     <th>Recognition Task</th>
-    <th>Convolutional Layers</th>
-    <th>Samples<br>(Classes)</th>
+    <th>Convolutional Layer Depths</th>
+    <th>Samples (Classes)</th>
     <th>Accuracy</th>
     <th>Weighted F1</th>
     <th>Params (×10<sup>3</sup>)</th>
     <th></th>
   </tr>
   <tr>
-    <td>① Issuing Office Code</td>
-    <td>32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64, 128</td>
-    <td>412 (134)</td>
+    <td>① Region Name</td>
+    <td style="white-space: nowrap;">32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64, 128</td>
+    <td>412 (134)<br><br><br></td>
     <td>0.93046<br>0.97816<br>0.97330</td>
     <td>0.92476<br>0.97543<br>0.97289</td>
     <td>368<br>462<br>132</td>
@@ -73,8 +143,8 @@ The models were trained using the Adam optimizer with cross entropy loss. The in
   </tr>
   <tr>
     <td>② Classification Number</td>
-    <td>32, 64, 128<br>16, 32, 64</td>
-    <td>444 (11)</td>
+    <td style="white-space: nowrap;">32, 64, 128<br>16, 32, 64</td>
+    <td>444 (11)<br><br></td>
     <td>0.97478<br>0.98423</td>
     <td>0.97760<br>0.98298</td>
     <td>97.9<br>25.9</td>
@@ -82,8 +152,8 @@ The models were trained using the Adam optimizer with cross entropy loss. The in
   </tr>
   <tr>
     <td>③ Kana Character</td>
-    <td>32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64, 128</td>
-    <td>430 (43)</td>
+    <td style="white-space: nowrap;">32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64, 128</td>
+    <td>430 (43)<br><br><br></td>
     <td>0.95814<br>0.97907<br>0.97674</td>
     <td>0.95581<br>0.97776<br>0.97519</td>
     <td>143<br>400<br>103</td>
@@ -91,8 +161,8 @@ The models were trained using the Adam optimizer with cross entropy loss. The in
   </tr>
   <tr>
     <td>④ Designation Number</td>
-    <td>32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64</td>
-    <td>547 (11)</td>
+    <td style="white-space: nowrap;">32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64</td>
+    <td>547 (11)<br><br><br></td>
     <td>0.99086<br>0.99269<br>0.99086</td>
     <td>0.99092<br>0.99271<br>0.99086</td>
     <td>104<br>395<br>29.4</td>
@@ -100,25 +170,37 @@ The models were trained using the Adam optimizer with cross entropy loss. The in
   </tr>
 </table>
 
-## **Observations**
+## Observations
 * (a) Model not deployed despite comparable metrics as a substantial decrease in confidence in the predicted classes was observed.
 
 * (b) Increasing the number of parameters resulted in marginal improvement or degraded performance.
 
-## **References**
-**alpr_jp** <br>
-Big thanks to dyama san for sharing the dataset. <br>
+* Vehicles must be partially visible for the license plates to be detected.
+
+## References
+**alpr_jp**
+<br>
+Big thanks to dyama san for sharing the alpr_jp dataset.
+<br>
 https://github.com/dyama/alpr_jp
 
-**License Plates Dataset** <br>
+**License Plates Dataset**
+<br>
 https://universe.roboflow.com/samrat-sahoo/license-plates-f8vsn
 
-**Chinese License Plate Recognition System Based on Convolutional Neural Network** <br>
-H. Chen, Y. Lin, and T. Zhao, 'Chinese License Plate Recognition System Based on Convolutional Neural Network', Highlights in Science, Engineering and Technology, vol. 34, pp. 95–102, 2023. <br>
+**YOLOv8**
+<br>
+https://github.com/ultralytics/ultralytics
+
+**Chinese License Plate Recognition System Based on Convolutional Neural Network**
+<br>
+H. Chen, Y. Lin, and T. Zhao, 'Chinese License Plate Recognition System Based on Convolutional Neural Network', Highlights in Science, Engineering and Technology, vol. 34, pp. 95–102, 2023.
+<br>
 https://www.researchgate.net/publication/369470024
 
-**How to Read License Plates (ナンバープレートの見方)**<br>
+**ナンバープレートの見方 (How to Read a Number Plate)**
+<br>
 https://wwwtb.mlit.go.jp/tohoku/jg/jg-sub29_1.html
 
-## **Fun Fact**
+## Fun Fact
 This repository was created on [Leap Day 2024](https://doodles.google/doodle/leap-day-2024/).
