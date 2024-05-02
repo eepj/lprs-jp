@@ -12,7 +12,8 @@ import random
 import sys
 from typing import Sequence
 
-from models.cnn import LP_CharacterRecognitionCNN
+from dataset import CharacterDataset
+from models import CharacterRecognitionCNN
 from utils import *
 
 # Set Noto Sans CJK JP font used to render plots
@@ -47,8 +48,7 @@ def main():
     parser.add_argument("--lr", type=float, default=LR_DEFAULT)
 
     # Hardware acceleratin device
-    parser.add_argument("--device", default="auto",
-                        choices=["cpu", "cuda", "mps", "auto"])
+    parser.add_argument("--device", default="auto", choices=["cpu", "cuda", "mps", "auto"])
 
     # Augmentation pipeline options
     parser.add_argument("--zoom", action="store_true", default=False)
@@ -92,16 +92,19 @@ def main():
     csv_path = os.path.expanduser(args.csv)
 
     # Perform a 60-20-20 stratified data split on the dataset
-    datasets, maps = stratify_dataset(csv_path, dir_path, random_state)
-    train_set, val_set, test_set = datasets
-    _, i2s = maps
+    stratified = stratify_dataset(csv_path, dir_path, random_state)
 
-    image_shape = (args.y, args.x)
+    train_set = stratified["split"]["train"]
+    val_set = stratified["split"]["val"]
+    test_set = stratified["split"]["test"]
+
+    itos = stratified["map"]["itos"]
+
+    img_shape = (args.y, args.x)
 
     # Determine the augmentation pipeline to use
     pipeline = [
-        transforms.ColorJitter((0.8, 1.2), (0.8, 1.2),
-                               (0.8, 1.2), (-0.3, 0.3)),
+        transforms.ColorJitter((0.8, 1.2), (0.8, 1.2), (0.8, 1.2), (-0.3, 0.3)),
         transforms.RandomChannelPermutation(),
         transforms.RandomInvert()
     ]
@@ -109,7 +112,7 @@ def main():
     # Random resized crop
     if args.zoom:
         pipeline = pipeline + [
-            transforms.RandomResizedCrop(image_shape, (args.zoom_min, args.zoom_max),
+            transforms.RandomResizedCrop(img_shape, (args.zoom_min, args.zoom_max),
                                          ratio=(1.0, args.zoom_ratio), antialias=True)
         ]
 
@@ -135,16 +138,15 @@ def main():
         parser.error("Sequence of int expected for --layers argument")
 
     # Define the model
-    model = LP_CharacterRecognitionCNN(3, len(i2s), image_shape,
-                                       args.layers, device,
-                                       transforms.Compose(pipeline))
+    num_cls = len(itos)
+    model = CharacterRecognitionCNN(3, num_cls, img_shape, args.layers, device, transforms.Compose(pipeline))
     # Get dataloaders
     batch_size = 8
-    train_loader = DataLoader(train_set, batch_size, shuffle=True)
-    val_loader = DataLoader(val_set, batch_size, shuffle=True)
+    train_dataloader = DataLoader(train_set, batch_size, shuffle=True)
+    val_dataloader = DataLoader(val_set, batch_size, shuffle=True)
 
     # Train the model using the provided hyperparameters
-    model.train_loop(train_loader, val_loader, args.epoch, args.lr)
+    model.train_loop(train_dataloader, val_dataloader, args.epoch, args.lr)
 
     # Evalulate the model on the test set
     result = evaluate_model(model, test_set)
@@ -157,7 +159,7 @@ def main():
     # Visualize the result
     if args.visualize:
         visualize_history(model)
-        visualize_result(result, i2s, "Misclassified Instances")
+        visualize_result(result, itos, "Misclassified Instances")
 
 
 if __name__ == "__main__":

@@ -15,20 +15,18 @@ Highlights in Science, Engineering and Technology, vol. 34, pp. 95-102, 2023.
 """
 
 
-class LP_CharacterRecognitionConvBlock(nn.Module):
+class CharacterRecognitionConvBlock(nn.Module):
 
-    def __init__(
-            self,
-            in_channels: int,
-            out_channels: int,
-            device: str = "cpu"):
+    def __init__(self,
+                 in_channels: int,
+                 out_channels: int,
+                 device: str = "cpu"):
 
-        super(LP_CharacterRecognitionConvBlock, self).__init__()
+        super(CharacterRecognitionConvBlock, self).__init__()
 
         self.device = device
 
-        self.conv = nn.Conv2d(in_channels, out_channels,
-                              kernel_size=3, stride=1, padding="same")
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding="same")
         self.bn = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU()
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
@@ -45,38 +43,37 @@ class LP_CharacterRecognitionConvBlock(nn.Module):
         return x
 
 
-class LP_CharacterRecognitionCNN(nn.Module):
+class CharacterRecognitionCNN(nn.Module):
 
     def __init__(
             self,
             in_channels: int,
             out_channels: int,
-            image_size: Sequence[int],
+            img_size: Sequence[int],
             layer_sizes: Sequence[int],
             device: str = "cpu",
             transforms: transforms.Transform | None = None):
-        super(LP_CharacterRecognitionCNN, self).__init__()
+
+        super(CharacterRecognitionCNN, self).__init__()
 
         self.device = device
 
         d = len(layer_sizes)
-        h, w = image_size
+        h, w = img_size
         layer_sizes.insert(0, in_channels)
         layer_sizes.append((h // (1 << d)) * (w // (1 << d)) * layer_sizes[-1])
 
         self.conv = nn.ModuleList()
 
         for c in range(d):
-            self.conv.append(LP_CharacterRecognitionConvBlock(
-                layer_sizes[c], layer_sizes[c + 1], device=self.device))
+            self.conv.append(CharacterRecognitionConvBlock(layer_sizes[c], layer_sizes[c + 1], device=self.device))
 
         self.flatten = nn.Flatten()
         self.dropout = nn.Dropout(0.3)
         self.fc = nn.Linear(layer_sizes[-1], out_channels)
 
         self.optimizer = torch.optim.Adam(self.parameters())
-        self.scheduler = torch.optim.lr_scheduler.StepLR(
-            self.optimizer, 30, gamma=0.1)
+        self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, 30, gamma=0.1)
         self.loss_fn = torch.nn.CrossEntropyLoss()
 
         self.history = {
@@ -91,6 +88,7 @@ class LP_CharacterRecognitionCNN(nn.Module):
         self.transforms = transforms
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+
         for conv in self.conv:
             x = conv(x)
 
@@ -101,6 +99,7 @@ class LP_CharacterRecognitionCNN(nn.Module):
         return x
 
     def train_epoch(self, dataloader: DataLoader) -> tuple[float, float]:
+
         self.train()
 
         losses = 0.0
@@ -108,14 +107,14 @@ class LP_CharacterRecognitionCNN(nn.Module):
         total_samples = 0
 
         for batch in dataloader:
-            images, labels = batch
+            imgs, labels = batch
             if self.transforms is not None:
-                images = self.transforms(images)
-            images = images.to(self.device)
+                imgs = self.transforms(imgs)
+            imgs = imgs.to(self.device)
             labels = labels.to(self.device)
 
             self.optimizer.zero_grad()
-            outputs = self(images.float())
+            outputs = self(imgs.float())
 
             loss = self.loss_fn(outputs, labels)
             loss.backward()
@@ -130,6 +129,7 @@ class LP_CharacterRecognitionCNN(nn.Module):
         return losses.cpu().item(), accuracy
 
     def validate_epoch(self, dataloader: DataLoader) -> tuple[float, float]:
+
         self.eval()
 
         losses = 0.0
@@ -138,11 +138,11 @@ class LP_CharacterRecognitionCNN(nn.Module):
 
         with torch.no_grad():
             for batch in dataloader:
-                images, labels = batch
-                images = images.to(self.device)
+                imgs, labels = batch
+                imgs = imgs.to(self.device)
                 labels = labels.to(self.device)
 
-                outputs = self(images.float())
+                outputs = self(imgs.float())
 
                 loss = self.loss_fn(outputs, labels)
                 losses += loss
@@ -167,8 +167,7 @@ class LP_CharacterRecognitionCNN(nn.Module):
                 g['lr'] = initial_lr
 
         tqdm_io = StringIO()
-        tqdm_epoch = tqdm(range(epoch), file=tqdm_io,
-                          colour="GREEN", leave=True, ascii=" ░▒██")
+        tqdm_epoch = tqdm(range(epoch), file=tqdm_io, colour="GREEN", leave=True, ascii=" ░▒██")
         # tqdm update once before entering loop
         print(tqdm_io.getvalue(), end="\n\033[A\r")
 
@@ -212,32 +211,32 @@ class LP_CharacterRecognitionCNN(nn.Module):
         except KeyboardInterrupt:
             pass
 
-    def predict(self, dataset: Dataset) -> tuple[torch.Tensor]:
+    def predict(self,
+                dataset: Dataset) -> tuple[torch.Tensor]:
+
         self.eval()
 
         probs = torch.Tensor([]).to(self.device)
         labels = torch.Tensor([]).to(self.device)
-        images = torch.Tensor([]).to(self.device)
+        imgs = torch.Tensor([]).to(self.device)
 
         print(f"Evaluating on device: {self.device}")
 
         with torch.no_grad():
             tqdm_io = StringIO()
-            tqdm_dataset = tqdm(dataset, file=tqdm_io,
-                                colour="GREEN", leave=True, ascii=" ░▒██")
+            tqdm_dataset = tqdm(dataset, file=tqdm_io, colour="GREEN", leave=True, ascii=" ░▒██")
 
             for sample in tqdm_dataset:
-                image, label = sample
-                image = image.to(self.device)
+                img, label = sample
+                img = img.to(self.device)
                 label = label.to(self.device)
 
-                output = self(image.float())
+                output = self(img.float())
                 output = torch.softmax(output, dim=1)
 
                 probs = torch.cat((probs, output))
-                labels = torch.cat(
-                    (labels, torch.Tensor([label]).to(self.device)))
-                images = torch.cat([images, image])
+                labels = torch.cat((labels, torch.Tensor([label]).to(self.device)))
+                imgs = torch.cat([imgs, img])
 
                 # For consistency with `train_epoch` function
                 print(tqdm_io.getvalue(), end="\r")
@@ -245,8 +244,9 @@ class LP_CharacterRecognitionCNN(nn.Module):
             # tqdm to update once more after loop ends
             print(tqdm_io.getvalue(), end="\r")
 
-        return probs, labels, images
+        return probs, labels, imgs
 
     def clear_history(self):
+
         for key in self.history.keys():
             self.history[key].clear()

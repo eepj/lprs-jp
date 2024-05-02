@@ -8,15 +8,13 @@ import os
 from typing import Sequence
 
 
-class LP_CharacterDataset(Dataset):
+class CharacterDataset(Dataset):
 
-    def __init__(
-        self,
-        image_dir: str,
-        image_paths: Sequence[str],
-        labels: Sequence[str],
-        label_map: dict | None = None
-    ):
+    def __init__(self,
+                 image_dir: str,
+                 image_paths: Sequence[str],
+                 labels: Sequence[str],
+                 label_map: dict | None = None):
 
         self.image_dir = image_dir
         self.image_paths = image_paths
@@ -28,11 +26,12 @@ class LP_CharacterDataset(Dataset):
         ])
 
     def __len__(self):
+
         return len(self.image_paths)
 
     def __getitem__(self, index: int):
-        image_path = os.path.join(
-            self.image_dir, self.image_paths[index])
+
+        image_path = os.path.join(self.image_dir, self.image_paths[index])
         image = read_image(image_path)
         label = self.labels[index]
 
