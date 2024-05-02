@@ -10,24 +10,15 @@ Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingf
 
 ## Japanese License Plate Format
 ### Markings
-<table>
-  <tr>
-    <td>
-      <div style="max-width: 80px; overflow: hidden;">
-        <img src="./images/XZjptNTxOZF.png" style="max-width: 100%; height: auto;">
-      </div>
-    </td>
-    <td>
-      ① Name of Region Registered
-      <br>
-      ② Classification Number
-      <br>
-      ③ Kana Character
-      <br>
-      ④ 4-Digit Designation Number (Leading zeros are shown as ．)
-    </td>
-  </tr>
-</table>
+<img src="./images/XZjptNTxOZF.png" height=150px>
+
+① Name of Region Registered
+<br>
+② Classification Number
+<br>
+③ Kana Character
+<br>
+④ 4-Digit Designation Number (Leading zeros are shown as ．)
 
 ### Color Scheme
 <table>
