@@ -1,12 +1,13 @@
 # Japanese License Plate Recognition
 ![Example use case](./images/AYapiMKfSYI.png)
 
-A Japanese license plate recognition project implemented with PyTorch.
-> [!Note]
-> For personal research purposes only. Project under development.
+Japanese license plate recognition project implemented with PyTorch. For research purpose only.
 
 ## Hugging Face Space Demo
 Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingface.co/spaces/eepj/jlpr).
+
+> [!Warning]
+Expect slower inference on tilted license plates.
 
 ## Japanese License Plate Format
 ### Markings
@@ -69,12 +70,15 @@ Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingf
 
 ## Datasets
 ### License Plates Dataset
-* Dataset comprising 350 vehicles and their corresponding license plate bounding boxes for fine-tuning YOLOv8 detection model to detect license plates from images.
+* Dataset comprising 350 vehicles and their corresponding license plate bounding boxes for fine-tuning YOLOv8 segmentation model to detect license plates from images.
 
 ### alpr_jp
-* Dataset comprising 1000+ Japanese license plate images for training character recognition models.
+* Dataset comprising 1000+ unlabeled Japanese license plate images for training character recognition models.
 * Google Search images were used to supplement the dataset in case of missing or less common markings.
+* All markings were manually labeled.
 
+## Approach
+![Approach](images/ZeluqoXjBnVr.png)
 
 ## Training
 ### Model
@@ -95,26 +99,9 @@ Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingf
 
 ![Augmentation pipeline](./images/HIMwhOP3XxY.png)
 
-## Metrics
-### License Plate Detection (YOLOv8)
-<table>
-  <tr>
-    <th>Precision(B)</th>
-    <th>Recall(B)</th>
-    <th>mAP50(B)</th>
-    <th>mAP50-95(B)</th>
-    <th>Fitness</th>
-  </tr>
-  <tr>
-    <td>0.84940</td>
-    <td>0.75702</td>
-    <td>0.85128</td>
-    <td>0.63573</td>
-    <td>0.65729</td>
-  </tr>
-</table>
+## Performance
 
-### Character Recognition
+### Metrics
 <table>
   <tr>
     <th>Recognition Task</th>
@@ -123,50 +110,43 @@ Check out the demo at [https://huggingface.co/spaces/eepj/jlpr](https://huggingf
     <th>Accuracy</th>
     <th>Weighted F1</th>
     <th>Params (×10<sup>3</sup>)</th>
-    <th></th>
   </tr>
   <tr>
     <td>① Region Name</td>
-    <td style="white-space: nowrap;">32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64, 128</td>
-    <td>412 (134)<br><br><br></td>
-    <td>0.93046<br>0.97816<br>0.97330</td>
-    <td>0.92476<br>0.97543<br>0.97289</td>
-    <td>368<br>462<br>132</td>
-    <td><br>✅<br>(a)</td>
+    <td style="white-space: nowrap;">64, 128, 256, 512</td>
+    <td>412 (134)</td>
+    <td>0.97573</td>
+    <td>0.97265</td>
+    <td>1690</td>
   </tr>
   <tr>
     <td>② Classification Number</td>
-    <td style="white-space: nowrap;">32, 64, 128<br>16, 32, 64</td>
-    <td>444 (11)<br><br></td>
-    <td>0.97478<br>0.98423</td>
-    <td>0.97760<br>0.98298</td>
-    <td>97.9<br>25.9</td>
-    <td>(b)<br>✅</td>
+    <td style="white-space: nowrap;">64, 128, 256</td>
+    <td>444 (11)</td>
+    <td>0.98423</td>
+    <td>0.98426</td>
+    <td>440</td>
   </tr>
   <tr>
     <td>③ Kana Character</td>
-    <td style="white-space: nowrap;">32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64, 128</td>
-    <td>430 (43)<br><br><br></td>
-    <td>0.95814<br>0.97907<br>0.97674</td>
-    <td>0.95581<br>0.97776<br>0.97519</td>
-    <td>143<br>400<br>103</td>
-    <td><br>✅<br>(a)</td>
+    <td style="white-space: nowrap;">64, 128, 256, 512</td>
+    <td>430 (43)</td>
+    <td>0.97907</td>
+    <td>0.97837</td>
+    <td>680</td>
   </tr>
   <tr>
     <td>④ Designation Number</td>
-    <td style="white-space: nowrap;">32, 64, 128<br>32, 64, 128, 256<br>16, 32, 64</td>
-    <td>547 (11)<br><br><br></td>
-    <td>0.99086<br>0.99269<br>0.99086</td>
-    <td>0.99092<br>0.99271<br>0.99086</td>
-    <td>104<br>395<br>29.4</td>
-    <td><br>(b)<br>✅</td>
+    <td style="white-space: nowrap;">64, 128, 256, 512</td>
+    <td>547 (11)</td>
+    <td>0.99817</td>
+    <td>0.99817</td>
+    <td>646</td>
   </tr>
 </table>
 
-## Observations
-* (a) Model not deployed despite comparable metrics as a substantial decrease in confidence in the predicted classes was observed.
-
-* (b) Increasing the number of parameters resulted in marginal improvement or degraded performance.
+### Example Test Case
+![Example](images/JixorLpQmKaN.png)
 
 ## References
 **alpr_jp**
@@ -192,6 +172,7 @@ https://www.researchgate.net/publication/369470024
 **ナンバープレートの見方 (How to Read a Number Plate)**
 <br>
 https://wwwtb.mlit.go.jp/tohoku/jg/jg-sub29_1.html
+
 
 ## Fun Fact
 This repository was created on [Leap Day 2024](https://doodles.google/doodle/leap-day-2024/).
