@@ -9,9 +9,6 @@ Japanese license plate recognition project implemented with PyTorch. For researc
 
 Check out the Gradio app on Hugging Face Spaces [https://huggingface.co/spaces/eepj/jlpr](https://huggingface.co/spaces/eepj/jlpr).
 
-> [!Warning]
-Expect slower inference on tilted license plates.
-
 ## Japanese License Plate Format
 ### Markings
 <img src="./images/XZjptNTxOZF.png" height=150px>
