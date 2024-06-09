@@ -1,13 +1,12 @@
 # Japanese License Plate Recognition
 ![Example use case](./images/AYapiMKfSYI.png)
-
-Japanese license plate recognition project implemented with PyTorch. For research purpose only.
+Japanese license plate recognition project implemented with PyTorch, YOLOv8 and OpenCV. For research purpose only. 
 
 ## Gradio App
 ### Hugging Face Spaces
-[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/eepj/jlpr)
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/eepj/lprs-jp)
 
-Check out the Gradio app on Hugging Face Spaces [https://huggingface.co/spaces/eepj/jlpr](https://huggingface.co/spaces/eepj/jlpr).
+Check out the Gradio app on Hugging Face Spaces [https://huggingface.co/spaces/eepj/lprs-jp](https://huggingface.co/spaces/eepj/lprs-jp).
 
 ## Japanese License Plate Format
 ### Markings
