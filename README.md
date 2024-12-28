@@ -160,7 +160,7 @@ Check out the demo app on [Hugging Face Spaces](https://huggingface.co/spaces/ee
 
 ### Example Test Case
 <!--![Example use case](./images/AYapiMKfSYI.png)-->
-<img src="images/KqzLrMNy3fA.png">
+<img src="images/FhRkzPJoYXL.png">
 
 ## References
 **alpr_jp**
